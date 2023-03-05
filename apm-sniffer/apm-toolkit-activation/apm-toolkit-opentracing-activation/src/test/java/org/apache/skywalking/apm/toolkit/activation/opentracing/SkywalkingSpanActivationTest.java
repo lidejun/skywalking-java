@@ -51,10 +51,9 @@ import org.apache.skywalking.apm.toolkit.activation.opentracing.span.SpanLogInte
 import org.apache.skywalking.apm.toolkit.activation.opentracing.span.SpanSetOperationNameInterceptor;
 import org.apache.skywalking.apm.toolkit.activation.opentracing.tracer.SkywalkingTracerExtractInterceptor;
 import org.apache.skywalking.apm.toolkit.activation.opentracing.tracer.SkywalkingTracerInjectInterceptor;
-import org.apache.skywalking.apm.toolkit.opentracing.SkywalkingContinuation;
+import org.apache.skywalking.apm.toolkit.opentracing.SkywalkingContext;
 import org.apache.skywalking.apm.toolkit.opentracing.SkywalkingSpan;
 import org.apache.skywalking.apm.toolkit.opentracing.SkywalkingSpanBuilder;
-import org.apache.skywalking.apm.toolkit.opentracing.TextMapContext;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -223,7 +222,7 @@ public class SkywalkingSpanActivationTest {
         };
 
         injectInterceptor.afterMethod(enhancedInstance, null, new Object[] {
-            new TextMapContext(),
+            new SkywalkingContext(),
             Format.Builtin.TEXT_MAP,
             carrier
         }, null, null);
@@ -325,7 +324,7 @@ public class SkywalkingSpanActivationTest {
                 try {
                     startSpan(enhancedInstance);
                     activateInterceptor.afterMethod(
-                        continuationHolder, SkywalkingContinuation.class.getMethod("activate"), null, null, null);
+                        continuationHolder, null, null, null, null);
                 } catch (Throwable throwable) {
                     throwable.printStackTrace();
                 } finally {

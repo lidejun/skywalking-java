@@ -22,7 +22,7 @@
 
     <groupId>org.apache.skywalking</groupId>
     <artifactId>java-agent</artifactId>
-    <version>8.14.0</version>
+    <version>8.14.1</version>
 
     <parent>
         <groupId>org.apache</groupId>
@@ -435,4 +435,29 @@
             </plugin>
         </plugins>
     </build>
+
+
+    <distributionManagement>
+        <repository>
+            <id>nexus3-releases</id>
+            <url>https://repo.seawto.com/repository/maven-releases/</url>
+        </repository>
+        <snapshotRepository>
+            <id>nexus3-snapshots</id>
+            <url>https://repo.seawto.com/repository/maven-snapshots/</url>
+        </snapshotRepository>
+    </distributionManagement>
+
+    <repositories>
+        <repository>
+            <id>public</id>
+            <url>https://repo.seawto.com/repository/maven-public/</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+    </repositories>
 </project>

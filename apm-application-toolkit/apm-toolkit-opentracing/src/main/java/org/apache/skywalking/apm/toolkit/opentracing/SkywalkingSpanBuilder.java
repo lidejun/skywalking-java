@@ -18,8 +18,6 @@
 
 package org.apache.skywalking.apm.toolkit.opentracing;
 
-import io.opentracing.ActiveSpan;
-import io.opentracing.BaseSpan;
 import io.opentracing.References;
 import io.opentracing.Span;
 import io.opentracing.SpanContext;
@@ -29,7 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SkywalkingSpanBuilder implements Tracer.SpanBuilder {
-    private List<Tag> tags = new ArrayList<Tag>();
+    private List<Tag> tags = new ArrayList<>();
     private String operationName;
     private boolean isEntry = false;
     private boolean isExit = false;
@@ -51,8 +49,8 @@ public class SkywalkingSpanBuilder implements Tracer.SpanBuilder {
     }
 
     @Override
-    public Tracer.SpanBuilder asChildOf(BaseSpan<?> parent) {
-        if (parent instanceof SkywalkingSpan || parent instanceof SkywalkingActiveSpan) {
+    public Tracer.SpanBuilder asChildOf(Span parent) {
+        if (parent instanceof SkywalkingSpan) {
             return this;
         }
         throw new IllegalArgumentException("parent must be type of SkywalkingSpan");
@@ -114,26 +112,24 @@ public class SkywalkingSpanBuilder implements Tracer.SpanBuilder {
     }
 
     @Override
+    public <T> Tracer.SpanBuilder withTag(io.opentracing.tag.Tag<T> tag, T t) {
+        if (t != null) {
+            tags.add(new Tag(tag.getKey(), t.toString()));
+        }
+        return this;
+    }
+
+    @Override
     public Tracer.SpanBuilder withStartTimestamp(long microseconds) {
         startTime = microseconds;
         return this;
     }
 
     @Override
-    public ActiveSpan startActive() {
-        return new SkywalkingActiveSpan(new SkywalkingSpan(this));
-    }
-
-    @Override
-    public Span startManual() {
+    public Span start() {
         return new SkywalkingSpan(this);
     }
 
-    @Override
-    @Deprecated
-    public Span start() {
-        return startManual();
-    }
 
     /**
      * All the get methods are for accessing data from activation
@@ -170,7 +166,7 @@ public class SkywalkingSpanBuilder implements Tracer.SpanBuilder {
      * All the following methods are needed for activation.
      */
     @Override
-    @NeedSnifferActivation("Stop the active span.")
+    //@NeedSnifferActivation("Stop the active span.")
     public Tracer.SpanBuilder ignoreActiveSpan() {
         return this;
     }

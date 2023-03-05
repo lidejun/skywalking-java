@@ -18,41 +18,51 @@
 
 package org.apache.skywalking.apm.toolkit.opentracing;
 
-import io.opentracing.ActiveSpan;
+import io.opentracing.ScopeManager;
 import io.opentracing.Span;
 import io.opentracing.SpanContext;
 import io.opentracing.Tracer;
+import io.opentracing.Scope;
 import io.opentracing.propagation.Format;
+import io.opentracing.util.ThreadLocalScopeManager;
 
 public class SkywalkingTracer implements Tracer {
 
-    public SpanBuilder buildSpan(String operationName) {
+    private final ThreadLocalScopeManager scopeManager = new ThreadLocalScopeManager();
+
+    @Override
+    public Tracer.SpanBuilder buildSpan(String operationName) {
         return new SkywalkingSpanBuilder(operationName);
     }
 
-    @NeedSnifferActivation
     @Override
     public <C> void inject(SpanContext spanContext, Format<C> format, C carrier) {
 
     }
 
-    @NeedSnifferActivation
     @Override
     public <C> SpanContext extract(Format<C> format, C carrier) {
         return new SkywalkingContext();
     }
 
     @Override
-    public ActiveSpan activeSpan() {
-        return new SkywalkingActiveSpan(new SkywalkingSpan(this));
+    public void close() {
+
     }
 
     @Override
-    public ActiveSpan makeActive(Span span) {
-        if (span instanceof SkywalkingSpan) {
-            return new SkywalkingActiveSpan((SkywalkingSpan) span);
-        } else {
-            throw new IllegalArgumentException("span must be a type of SkywalkingSpan");
-        }
+    public ScopeManager scopeManager() {
+        return this.scopeManager;
     }
+
+    @Override
+    public Span activeSpan() {
+        return this.scopeManager.activeSpan();
+    }
+
+    @Override
+    public Scope activateSpan(Span span) {
+        return this.scopeManager.activate(span);
+    }
+
 }

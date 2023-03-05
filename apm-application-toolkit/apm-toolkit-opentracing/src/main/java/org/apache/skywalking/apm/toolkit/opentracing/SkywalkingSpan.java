@@ -20,29 +20,32 @@ package org.apache.skywalking.apm.toolkit.opentracing;
 
 import io.opentracing.Span;
 import io.opentracing.SpanContext;
+import io.opentracing.tag.Tag;
+
 import java.util.HashMap;
 import java.util.Map;
 
 public class SkywalkingSpan implements Span {
-    @NeedSnifferActivation("1.ContextManager#createSpan (Entry,Exit,Local based on builder)." + "2.set the span reference to the dynamic field of enhanced SkywalkingSpan")
+    //@NeedSnifferActivation("1.ContextManager#createSpan (Entry,Exit,Local based on builder)." + "2.set the span reference to the dynamic field of enhanced SkywalkingSpan")
     SkywalkingSpan(SkywalkingSpanBuilder builder) {
+
     }
 
     /**
      * Create a shell span for {@link SkywalkingTracer#activeSpan()}
      */
-    @NeedSnifferActivation("1. set the span reference to the dynamic field of enhanced SkywalkingSpan")
+    //@NeedSnifferActivation("1. set the span reference to the dynamic field of enhanced SkywalkingSpan")
     public SkywalkingSpan(SkywalkingTracer tracer) {
 
     }
 
-    @NeedSnifferActivation("Override span's operationName, which has been given at ")
+    //@NeedSnifferActivation("Override span's operationName, which has been given at ")
     @Override
     public Span setOperationName(String operationName) {
         return this;
     }
 
-    @NeedSnifferActivation("AbstractTracingSpan#log(long timestampMicroseconds, Map<String, ?> fields)")
+    //@NeedSnifferActivation("AbstractTracingSpan#log(long timestampMicroseconds, Map<String, ?> fields)")
     @Override
     public Span log(long timestampMicroseconds, Map<String, ?> fields) {
         return this;
@@ -51,7 +54,7 @@ public class SkywalkingSpan implements Span {
     /**
      * Stop the active span
      */
-    @NeedSnifferActivation("1.ContextManager#stopSpan(AbstractSpan span)" + "2. The parameter of stop method is from the dynamic field of enhanced SkywalkingSpan")
+    //@NeedSnifferActivation("1.ContextManager#stopSpan(AbstractSpan span)" + "2. The parameter of stop method is from the dynamic field of enhanced SkywalkingSpan")
     @Override
     public void finish(long finishMicros) {
 
@@ -74,7 +77,7 @@ public class SkywalkingSpan implements Span {
         return SkywalkingContext.INSTANCE;
     }
 
-    @NeedSnifferActivation("1. ContextManager#activeSpan()" + "2. SkywalkingSpan#setTag(String, String)")
+    //@NeedSnifferActivation("1. ContextManager#activeSpan()" + "2. SkywalkingSpan#setTag(String, String)")
     @Override
     public Span setTag(String key, String value) {
         return this;
@@ -88,6 +91,11 @@ public class SkywalkingSpan implements Span {
     @Override
     public Span setTag(String key, Number value) {
         return setTag(key, String.valueOf(value));
+    }
+
+    @Override
+    public <T> Span setTag(Tag<T> tag, T t) {
+        return this;
     }
 
     @Override
@@ -116,23 +124,5 @@ public class SkywalkingSpan implements Span {
     @Override
     public String getBaggageItem(String key) {
         return null;
-    }
-
-    /**
-     * Don't support logging with payload.
-     */
-    @Deprecated
-    @Override
-    public Span log(String eventName, Object payload) {
-        return this;
-    }
-
-    /**
-     * Don't support logging with payload.
-     */
-    @Deprecated
-    @Override
-    public Span log(long timestampMicroseconds, String eventName, Object payload) {
-        return this;
     }
 }
